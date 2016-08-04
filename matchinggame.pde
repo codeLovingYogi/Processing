@@ -8,27 +8,13 @@ int ch = 100;   // height of tiles
 int width = 50;  // width of single tile
 int numTurns = 0;   // number of turns
 boolean restart = false;    // for testing of reset button
-int[] list1 = {};
-int[] list2 = {};
 int[] deck = {};
+int[] exposed = {};
 
 void setup() {
     size(840, 150);
     resetButtonColor = color(221, 160, 221);
-    cardsColor = color(147, 112, 219);
-    for (int i = 0; i < 8; i = i+1){
-        append(list1, i);
-        append(list2, i);
-    }
-    deck = concat(list1, list2);
-    
-    int N = deck.length; 
-    for (int i = 0; i < N; i++){ 
-      int r = i + (int) (Math.random() * (N-i)); 
-      String t = deck[r]; 
-      deck[r] = deck[i]; 
-      deck[i] = t; 
-    }     
+    initializeDeck();
 } 
 
 void draw() { 
@@ -54,7 +40,7 @@ void draw() {
     }
 
     fill(color(255));
-    for (int i = 0; i < deck.length; i = i+1){
+    for (int i = 0; i < deck.length; i++){
         text(deck[i], (cx + (width*i) + (width/2)), cy + (ch / 2));
     }
 }
@@ -69,4 +55,27 @@ void mousePressed() {
 void newGame() {
     restart = true; 
     numTurns = numTurns + 10;
+}
+
+void initializeDeck() {
+    cardsColor = color(147, 112, 219);
+    for (int j = 0; j < 2; j++){
+        for (int i = 0; i < 8; i++){
+            append(deck, i);
+        }
+    }
+    
+    // randomize deck
+    int N = deck.length; 
+    for (int i = 0; i < N; i++){ 
+      int r = i + (int) (Math.random() * (N-i)); 
+      String t = deck[r]; 
+      deck[r] = deck[i]; 
+      deck[i] = t; 
+    } 
+
+    // to track exposed cards
+    for (int e = 0; e < N; e++){
+        append(exposed, "False");
+    }        
 }
