@@ -6,12 +6,13 @@ int cy = 35;        // position y of tiles
 int cw = 800;       // width of tiles
 int ch = 100;       // height of tiles
 int width = 50;     // width of single tile
-int numTurns = 0;   // number of turns
 boolean restart = false;    // for testing of reset button
 int[] deck = {};
-int[] exposed = {};         // currently exposed cards
-int[] matched = {};         // matched cards
+boolean[] exposed = {};         // currently exposed cards
+boolean[] matched = {};         // matched cards
 int N = 16;         // length of deck
+int turns;      // number of turns
+int state;      // track num cards revealed
 
 void setup() {
     size(840, 150);
@@ -30,16 +31,16 @@ void draw() {
     fill(color(0));
     text("Reset", x + (w / 2), y + (h / 2));
     textAlign(CENTER, CENTER);
-    text("Turns = " + numTurns, x + (w + 40), y + (h / 2));
+    text("Turns = " + turns, x + (w + 40), y + (h / 2));
     
     // cards
     fill(cardsColor);
     rect(cx, cy, cw, ch);
 
-    // test reset button
+    // test clicked cards
     if(restart) {
-        //fill(color(255))
-        //rect(cx, cy, cw, ch);
+        fill(color(255))
+        rect(cx, cy, cw, ch);
     }
 
     // display already matched or currently exposed cards only
@@ -51,42 +52,46 @@ void draw() {
         else if (exposed[i]){
             text(deck[i], (cx + (width*i) + (width/2)), cy + (ch / 2));
         }
-        //text(deck[i], (cx + (width*i) + (width/2)), cy + (ch / 2));
-    }
-
-    
+        line((cx + (width*i) + (width)), cy, (cx + (width*i) + (width)), cy + ch);
+    }    
 }
 
 void mousePressed() {
+    // start new game if reset clicked
     if (mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h) {
         newGame();
     }
-    //text(numTurns, x + (w + 70), y + (h / 2));
+
+    // track revealed and matched cards
+    if (mouseX >= cx && mouseX <= cx+cw && mouseY >= cy && mouseY <= cy+ch) {
+        restart = true; 
+    }
 }
 
 void newGame() {
-    restart = true; 
+    
     //numTurns = numTurns + 10;
+    state = 0;
+    turns = 0;
     shuffle();
 
-
+    // reset matched or exposed cards
+    for (int e = 0; e < N; e++){
+        append(exposed, "True");
+        append(matched, "True");
+    }    
 }
 
 void initializeDeck() {
+    // create deck with matchable cards
     cardsColor = color(147, 112, 219);
     for (int j = 0; j < 2; j++){
         for (int i = 0; i < (N/2); i++){
             append(deck, i);
         }
     }
-
+    // for use in iteration of deck
     N = deck.length;
-
-    // to track matched or exposed cards
-    for (int e = 0; e < N; e++){
-        append(exposed, "True");
-        append(matched, "True");
-    }    
 }
 
 void shuffle(){  
