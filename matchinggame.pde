@@ -9,10 +9,11 @@ int width = 50;     // width of single tile
 boolean restart = false;    // for testing of reset button
 int[] deck = {};
 boolean[] exposed = {};         // currently exposed cards
-boolean[] matched = {};         // matched cards
 int N = 16;         // length of deck
-int turns;      // number of turns
-int state;      // track num cards revealed
+int turns;          // number of turns
+int state;          // track num cards revealed
+int card1;
+int card2;
 
 void setup() {
     size(840, 150);
@@ -32,24 +33,15 @@ void draw() {
     text("Reset", x + (w / 2), y + (h / 2));
     textAlign(CENTER, CENTER);
     text("Turns = " + turns, x + (w + 40), y + (h / 2));
-    
+   
     // cards
     fill(cardsColor);
     rect(cx, cy, cw, ch);
 
-    // test clicked cards
-    if(restart) {
-        fill(color(255))
-        rect(cx, cy, cw, ch);
-    }
-
-    // display already matched or currently exposed cards only
+    // display exposed cards only
     fill(color(255));
-    for (int i = 0; i < N; i++){
-        if (matched[i]){
-            text(deck[i], (cx + (width*i) + (width/2)), cy + (ch / 2));
-        }
-        else if (exposed[i]){
+    for(int i = 0; i < N; i++){
+        if(exposed[i]=="True"){
             text(deck[i], (cx + (width*i) + (width/2)), cy + (ch / 2));
         }
         line((cx + (width*i) + (width)), cy, (cx + (width*i) + (width)), cy + ch);
@@ -57,28 +49,26 @@ void draw() {
 }
 
 void mousePressed() {
-    // start new game if reset clicked
-    if (mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h) {
+    // reset clicked
+    if(mouseX >= x && mouseX <= x+w && mouseY >= y && mouseY <= y+h) {
         newGame();
     }
 
-    // track revealed and matched cards
-    if (mouseX >= cx && mouseX <= cx+cw && mouseY >= cy && mouseY <= cy+ch) {
-        restart = true; 
+    // cards clicked
+    if(mouseX >= cx && mouseX <= cx+cw && mouseY >= cy && mouseY <= cy+ch) {
+        playGame();
     }
 }
 
 void newGame() {
-    
-    //numTurns = numTurns + 10;
     state = 0;
     turns = 0;
     shuffle();
 
-    // reset matched or exposed cards
+    // reset exposed cards
     for (int e = 0; e < N; e++){
-        append(exposed, "True");
-        append(matched, "True");
+        //append(exposed, "False");
+        exposed[e] = "False";
     }    
 }
 
@@ -103,3 +93,34 @@ void shuffle(){
       deck[i] = t; 
     }
 } 
+
+void playGame(){
+    int clickIndex;
+    
+    // find card selected as index in deck
+    clickIndex = floor((mouseX - cx) / width);
+    
+    if(state == 0){
+        state = 1;
+        exposed[clickIndex] = "True";
+        card1 = clickIndex;
+    } else if(state == 1){
+        if(exposed[clickIndex] != "True"){
+            state = 2;
+            exposed[clickIndex] = "True";
+            card2 = clickIndex;
+            turns++;
+        }
+    } else if(state==2){
+        //state = 0;
+        if(exposed[clickIndex] != "True"){
+            if(deck[card1]!=deck[card2]){
+                exposed[card1] = "False";
+                exposed[card2] = "False";
+            }
+            state = 1;
+            exposed[clickIndex] = "True";
+            card1 = clickIndex;
+        }   
+    }    
+}
