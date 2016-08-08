@@ -10,13 +10,12 @@ int cwidth = 50;    // width of single tile
 int[] deck = {};
 boolean[] exposed = {};     // currently exposed cards
 int N = 16;         // length of deck
-int numExposed = 0; // determine win
+//int numExposed = 0; // determine win
 int turns;          // number of turns
 int state;          // track num cards revealed
 int card1;
 int card2;
 String message;
-boolean win = false;
 
 void setup() {
     size(840, 200);
@@ -73,8 +72,7 @@ void mousePressed() {
 void newGame() {
     state = 0;
     turns = 0;
-    numExposed = 0;
-    win = false;
+    //numExposed = 0;
     shuffle();
 
     // reset exposed cards
@@ -131,12 +129,12 @@ void playGame(){
                 exposed[card1] = false;
                 exposed[card2] = false;
             }
-            else if(deck[card1]==deck[card2]){
-                numExposed+= 2;
-                if(numExposed==4){
-                    message = "Congratulations, you win! Click 'Reset' to play again.";
-                }
-            }
+            //else if(deck[card1]==deck[card2]){
+            //    numExposed+= 2;
+            //    if(numExposed==16){
+            //        message = "Congratulations, you win! Click 'Reset' to play again.";
+            //    }
+            //}
 
             state = 1;
             exposed[clickIndex] = true;
